@@ -1,0 +1,21 @@
+{
+  "name": "@eyevinn/srt-webrtc",
+  "version": "0.1.0",
+  "description": "NPM library to setup an WebRTC peer with SRT input as source (requires ffmpeg+srt)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node example.js"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "fastify": "^2.14.1",
+    "fastify-cors": "^3.0.3",
+    "fastify-swagger": "^2.6.0",
+    "make-promises-safe": "^5.1.0",
+    "uuid": "^8.1.0",
+    "wrtc": "^0.4.5"
+  }
+}
