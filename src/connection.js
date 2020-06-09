@@ -14,6 +14,9 @@ class Connection extends EventEmitter {
 
     const peerConnection = new _private.PeerConnection({ sdpSemantics: 'unified-plan' });
 
+    const audioTransceiver = peerConnection.addTransceiver('audio');
+    const videoTransceiver = peerConnection.addTransceiver('video');
+
     let connectionTimer = setTimeout(() => {
       if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed') {
         this.close();
@@ -23,6 +26,7 @@ class Connection extends EventEmitter {
     let reconnectionTimer = null;
 
     const onIceConnectionStateChange = () => {
+      debug(this.getId() + `: ICE Connection State '${peerConnection.iceConnectionState}'`);
       if (peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed') {
         if (connectionTimer) {
           clearTimeout(connectionTimer);
@@ -42,8 +46,9 @@ class Connection extends EventEmitter {
     peerConnection.addEventListener('iceconnectionstatechange', onIceConnectionStateChange);
 
     this.doOffer = async () => {
-      debug(this);
       const offer = await peerConnection.createOffer();
+      debug(this.getId() + ": Got offer: ");
+      debug(offer);
       await peerConnection.setLocalDescription(offer);
       try {
         await waitUntilIceGatheringStateComplete(this.getId(), peerConnection);
@@ -60,14 +65,14 @@ class Connection extends EventEmitter {
     this.getId = () => _private.connectionId;
     this.asJson = () => ({
       id: _private.connectionId,
-      localDescription: {
+      localDescription: peerConnection.localDescription ? {
         type: peerConnection.localDescription.type,
         sdp: peerConnection.localDescription.sdp.replace(/\r\na=ice-options:trickle/g, ''),
-      },
-      remoteDescription: {
+      } : null,
+      remoteDescription: peerConnection.remoteDescription ? {
         type: peerConnection.remoteDescription.type,
         sdp: peerConnection.remoteDescription.sdp.replace(/\r\na=ice-options:trickle/g, '')
-      },
+      } : null,
     });
     this.close = () => {
       peerConnection.removeEventListener('iceconnectionstatechange', onIceConnectionStateChange);

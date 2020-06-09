@@ -11,7 +11,7 @@ const routes = (fastify, opts, next) => {
       const connection = await connectionManager.createConnection();
       reply.send(connection.asJson());
     } catch (exc) {
-      reply.code(400).send({ message: exc.message });
+      reply.code(500).send({ message: exc.message });
     }
   });
   next();
