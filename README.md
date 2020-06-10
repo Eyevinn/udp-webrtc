@@ -26,3 +26,7 @@ Example when using ffmpeg as an SRT to UDP gateway.
 ```
 ffmpeg -i srt://0.0.0.0:1234?pkt_size=1316&mode=listener -map 0:v -c copy -f mpegts udp://<IP>:2234 -map 0:a -c copy -f mpegts udp://<IP>:2235
 ```
+
+## LICENSE
+
+This project is still *work in progress* but will be made available under Apache-2.0 open source license.
