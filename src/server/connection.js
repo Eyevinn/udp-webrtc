@@ -14,8 +14,8 @@ class Connection extends EventEmitter {
 
     const peerConnection = new _private.PeerConnection({ sdpSemantics: 'unified-plan' });
 
-    const audioTransceiver = peerConnection.addTransceiver('audio');
-    const videoTransceiver = peerConnection.addTransceiver('video');
+    const audioTrack = peerConnection.addTransceiver('audio').receiver.track;
+    const videoTrack = peerConnection.addTransceiver('video').receiver.track;
 
     let connectionTimer = setTimeout(() => {
       if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed') {

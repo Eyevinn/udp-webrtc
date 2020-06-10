@@ -1,5 +1,7 @@
 const Fastify = require('fastify')({ ignoreTrailingSlash: true });
 const { v4: uuidv4 } = require('uuid');
+const debug = require('debug')('connection-manager');
+
 
 const Connection = require('./connection.js');
 
@@ -14,6 +16,29 @@ const routes = (fastify, opts, next) => {
       reply.code(500).send({ message: exc.message });
     }
   });
+
+  fastify.get("/connections", { }, async (request, reply) => {
+    try {
+      reply.send(connectionManager.getConnections());
+    } catch (exc) {
+      reply.code(500).send({ message: exc.message });
+    }
+  });
+
+  fastify.post("/connections/:id/remote-description", { }, async (request, reply) => {
+    try {
+      const connection = connectionManager.getConnectionById(request.params.id);
+      if (!connection) {
+        reply.code(404).send();
+      } else {
+        await connection.applyAnswer(request.body);
+        reply.send(connection.asJson().remoteDescription);
+      }
+    } catch (exc) {
+      reply.code(500).send({ message: exc.message });
+    }
+  });
+
   next();
 };
 
@@ -73,7 +98,7 @@ class WebRTCConnectionManager {
   }
 
   getConnections() {
-    return Object.keys(this.connections).map(id => { this.connections[id].asJson() });
+    return Object.keys(this.connections).map(id => this.connections[id].asJson());
   }
 
   getConnectionById(connectionId) {

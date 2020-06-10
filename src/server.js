@@ -1,6 +1,6 @@
 require('make-promises-safe') // installs an 'unhandledRejection' handler
 
-const WebRTCConnectionManager = require('./webrtc_connection_manager.js');
+const WebRTCConnectionManager = require('./server/webrtc_connection_manager.js');
 
 class SRTWebRTCServer {
   constructor() {
