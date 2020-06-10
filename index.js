@@ -1,3 +1,3 @@
-const SRTWebRTCServer = require('./src/server.js');
+const UDPWebRTCServer = require('./src/server.js');
 
-module.exports = SRTWebRTCServer;
+module.exports = UDPWebRTCServer;
