@@ -3,7 +3,7 @@ const DefaultRTCPeerConnection = require('wrtc').RTCPeerConnection;
 const debug = require('debug')('connection');
 
 class Connection extends EventEmitter {
-  constructor({ connectionId, RTCPeerConnection }) {
+  constructor({ connectionId, RTCPeerConnection, videoTrack, audioTrack }) {
     super();
 
     const _private = {
@@ -14,8 +14,8 @@ class Connection extends EventEmitter {
 
     const peerConnection = new _private.PeerConnection({ sdpSemantics: 'unified-plan' });
 
-    const audioTrack = peerConnection.addTransceiver('audio').receiver.track;
-    const videoTrack = peerConnection.addTransceiver('video').receiver.track;
+    peerConnection.addTrack(audioTrack);
+    peerConnection.addTrack(videoTrack);
 
     let connectionTimer = setTimeout(() => {
       if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed') {
@@ -59,6 +59,8 @@ class Connection extends EventEmitter {
     };
 
     this.applyAnswer = async (answer) => {
+      debug(this.getId() + ": Apply answer: ");
+      debug(answer);
       await peerConnection.setRemoteDescription(answer);
     };
 
@@ -75,6 +77,9 @@ class Connection extends EventEmitter {
       } : null,
     });
     this.close = () => {
+      audioTrack.stop();
+      videoTrack.stop();
+
       peerConnection.removeEventListener('iceconnectionstatechange', onIceConnectionStateChange);
       if (connectionTimer) {
         clearTimeout(connectionTimer);
