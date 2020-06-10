@@ -1,5 +1,5 @@
 {
-  "name": "@eyevinn/srt-webrtc",
+  "name": "@eyevinn/udp-webrtc",
   "version": "0.1.0",
   "description": "NPM library to setup an WebRTC peer with SRT input as source (requires ffmpeg+srt)",
   "main": "index.js",
