@@ -24,7 +24,7 @@ The server provides a REST API for the RTC connection negotiation between the cl
 Example when using ffmpeg as an SRT to UDP gateway.
 
 ```
-ffmpeg -i srt://0.0.0.0:1234?pkt_size=1316&mode=listener -c:v rawvideo -an -pix_fmt yuv420p -f rawvideo udp://<IP>:2234
+ffmpeg -i srt://0.0.0.0:1234?pkt_size=1316&mode=listener -c:v rawvideo -an -pix_fmt yuv420p -f rawvideo udp://<IP>:2234?pkt_size=1316
 ```
 
 ## LICENSE

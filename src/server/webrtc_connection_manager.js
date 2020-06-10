@@ -131,9 +131,10 @@ class WebRTCConnectionManager {
     const videoTrack = videoSource.createTrack();
 
     this.udpServerVideo.on('data', chunk => {
+      debug(`Got data ${chunk.length}`);
       videoSource.onFrame({
-        width: 640,
-        height: 360,
+        width: 1280,
+        height: 720,
         data: new Uint8ClampedArray(chunk)
       });
     });
