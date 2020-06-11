@@ -1,6 +1,5 @@
 const Fastify = require('fastify')({ ignoreTrailingSlash: true });
 const { v4: uuidv4 } = require('uuid');
-const { RTCAudioSource, RTCVideoSource } = require('wrtc').nonstandard;
 const debug = require('debug')('connection-manager');
 
 const schemas = require('../model/schemas.js');
@@ -125,26 +124,14 @@ class WebRTCConnectionManager {
   }
 
   async createConnection() {
-    const audioSource = new RTCAudioSource();
-    const videoSource = new RTCVideoSource();
-    const audioTrack = audioSource.createTrack();
-    const videoTrack = videoSource.createTrack();
-
-    this.udpServerVideo.on('data', chunk => {
-      debug(`Got data ${chunk.length}`);
-      videoSource.onFrame({
-        width: 1280,
-        height: 720,
-        data: new Uint8ClampedArray(chunk)
-      });
-    });
-
     const connectionId = uuidv4();
     const connection = new Connection({ 
       connectionId: connectionId,
-      audioTrack, 
-      videoTrack,
     });
+    this.udpServerVideo.on('data', chunk => {
+      connection.onVideoFrame(320, 240, chunk);
+    });
+
     this.connections[connectionId] = connection;
 
     debug("Created new connection");

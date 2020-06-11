@@ -1,18 +1,25 @@
 const EventEmitter = require('events');
 const DefaultRTCPeerConnection = require('wrtc').RTCPeerConnection;
+const { RTCAudioSource, RTCVideoSource } = require('wrtc').nonstandard;
 const debug = require('debug')('connection');
 
 class Connection extends EventEmitter {
-  constructor({ connectionId, RTCPeerConnection, videoTrack, audioTrack }) {
+  constructor({ connectionId, RTCPeerConnection }) {
     super();
 
     const _private = {
       connectionId: connectionId,
       PeerConnection: RTCPeerConnection || DefaultRTCPeerConnection,
-      state: 'open'
+      state: 'open',
+      frames: 0
     };
 
     const peerConnection = new _private.PeerConnection({ sdpSemantics: 'unified-plan' });
+
+    const audioSource = new RTCAudioSource();
+    const videoSource = new RTCVideoSource();
+    const audioTrack = audioSource.createTrack();
+    const videoTrack = videoSource.createTrack();
 
     peerConnection.addTrack(audioTrack);
     peerConnection.addTrack(videoTrack);
@@ -64,6 +71,15 @@ class Connection extends EventEmitter {
       await peerConnection.setRemoteDescription(answer);
     };
 
+    this.onVideoFrame = (width, height, chunk) => {
+      debug(`Got frame (${_private.frames}) ${chunk.length} (expected=${width * height * 1.5})`);
+      _private.frames++;
+      videoSource.onFrame({
+        width, height,
+        data: new Uint8ClampedArray(chunk)
+      });
+    }
+
     this.getId = () => _private.connectionId;
     this.asJson = () => ({
       id: _private.connectionId,
@@ -75,6 +91,7 @@ class Connection extends EventEmitter {
         type: peerConnection.remoteDescription.type,
         sdp: peerConnection.remoteDescription.sdp.replace(/\r\na=ice-options:trickle/g, '')
       } : null,
+      frames: _private.frames
     });
     this.close = () => {
       audioTrack.stop();

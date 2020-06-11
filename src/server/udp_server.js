@@ -8,7 +8,7 @@ class UdpServer extends EventEmitter {
     this.udpPort = opts.port;
 
     let buffer = new Buffer.alloc(200, 0);
-    const chunkSize = opts.chunkSize || 1280 * 720 * 1.5;
+    const chunkSize = opts.chunkSize || 1280 * 720 * 1.5; // I420 frame
 
     this.socket = dgram.createSocket('udp4');
     this.socket.on('error', err => {
