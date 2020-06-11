@@ -9,6 +9,7 @@ async function requestPeerConnection() {
 document.addEventListener("DOMContentLoaded", () => {
   const remoteVideo = document.querySelector("video#example");
   remoteVideo.autoplay = true;
+  remoteVideo.muted = true;
 
   const setup = async () => {
     const remotePeerConnection = await requestPeerConnection();
